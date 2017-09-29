@@ -1,27 +1,7 @@
-<%= form_with(model: message, local: true) do |form| %>
-  <% if message.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(message.errors.count, "error") %> prohibited this message from being saved:</h2>
+<%= form_for message, remote: true, authenticity_token: true do |f| %>
+  <%= f.label :your_message %>:
+  <%= f.text_area :content, class: "form-control", data: {textarea: "message"} %>
 
-      <ul>
-      <% message.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-      </ul>
-    </div>
-  <% end %>
-
-  <div class="field">
-    <%= form.label :user_id %>
-    <%= form.text_field :user_id, id: :message_user_id %>
-  </div>
-
-  <div class="field">
-    <%= form.label :room_id %>
-    <%= form.text_field :room_id, id: :message_room_id %>
-  </div>
-
-  <div class="actions">
-    <%= form.submit %>
-  </div>
+  <%= f.hidden_field :room_id, value: room.id %>
+  <%= f.submit "send", class: "btn btn-primary", data: {send: "message"} %>
 <% end %>

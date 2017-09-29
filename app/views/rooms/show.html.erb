@@ -1,9 +1,26 @@
 <p id="notice"><%= notice %></p>
 
-<p>
-  <strong>Video url:</strong>
-  <%= @room.video_url %>
-</p>
+<div class="row col-md-8 col-md-offset-2">
+  <h1><%= @room.name %></h1>
+
+<div class="panel panel-default">
+  <% if @room.messages.any? %>
+    <div class="panel-body">
+      <div id="messages">
+        <% @room.messages.each do |message| %>
+          <%= render partial: 'messages/message', locals: {message: message} %>
+        <% end %>
+      </div>
+    </div>
+  <%else%>
+    <div class="panel-body hidden" id="messages">
+    </div>
+  <%end%>
+</div>
+
+  <%= render partial: 'messages/form', locals: {message: @message, room: @room}%>
+</div>
+
 
 <%= link_to 'Edit', edit_room_path(@room) %> |
 <%= link_to 'Back', rooms_path %>

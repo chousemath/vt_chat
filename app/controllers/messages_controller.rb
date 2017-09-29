@@ -1,5 +1,6 @@
 class MessagesController < ApplicationController
   before_action :set_message, only: [:show, :edit, :update, :destroy]
+  before_action :authenticate_user!
 
   # GET /messages
   # GET /messages.json
@@ -24,16 +25,21 @@ class MessagesController < ApplicationController
   # POST /messages
   # POST /messages.json
   def create
-    @message = Message.new(message_params)
-
-    respond_to do |format|
-      if @message.save
-        format.html { redirect_to @message, notice: 'Message was successfully created.' }
-        format.json { render :show, status: :created, location: @message }
-      else
-        format.html { render :new }
-        format.json { render json: @message.errors, status: :unprocessable_entity }
-      end
+    puts "\n\n\nIN THE MESSAGE CREATE METHOD\n\n\n"
+    puts "\n\n\nmessage_params: #{message_params.inspect}\n\n\n"
+    message = Message.new(message_params)
+    message.user = current_user
+    puts "new message: #{message.inspect}"
+    if message.save
+      puts "\nI SHOULD BE PUSHED\n"
+      # broadcast message to the 'messages' stream
+      # the stream is then passed along to Redis
+      ActionCable.server.broadcast 'messages',
+        message: message.content,
+        user: message.user.email
+      head :ok
+    else
+      redirect_to chatrooms_path
     end
   end
 
