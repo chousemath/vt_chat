@@ -5,7 +5,8 @@
 <table>
   <thead>
     <tr>
-      <th>Video url</th>
+      <th>RTC-URL</th>
+      <th>ROOM-NAME</th>
       <th colspan="3"></th>
     </tr>
   </thead>
@@ -14,6 +15,8 @@
     <% @rooms.each do |room| %>
       <tr>
         <td><%= room.video_url %></td>
+        <td><%= room.name %></td>
+
         <td><%= link_to 'Show', room %></td>
         <td><%= link_to 'Edit', edit_room_path(room) %></td>
         <td><%= link_to 'Destroy', room, method: :delete, data: { confirm: 'Are you sure?' } %></td>
