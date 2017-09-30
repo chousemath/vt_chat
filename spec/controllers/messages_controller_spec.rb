@@ -48,4 +48,60 @@ RSpec.describe MessagesController, type: :controller do
       end
     end
   end
+
+  describe 'post /messages' do
+    context 'failure cases' do
+      it 'should reject a request if not logged in' do
+        message_count_before = Message.count
+        post :create, params: {
+          message: {
+            content: 'changed',
+            room_id: Room.last.id
+          }
+        }
+        expect(Message.count).to eq(message_count_before)
+      end
+
+      it 'should reject a request if there is no content' do
+        message_count_before = Message.count
+        user = User.last
+        sign_in user
+        post :create, params: {
+          message: {
+            # content: 'changed',
+            room_id: Room.last.id
+          }
+        }
+        expect(Message.count).to eq(message_count_before)
+      end
+
+      it 'should reject a request if there is no content' do
+        message_count_before = Message.count
+        user = User.last
+        sign_in user
+        post :create, params: {
+          message: {
+            content: 'changed'
+            # room_id: Room.last.id
+          }
+        }
+        expect(Message.count).to eq(message_count_before)
+      end
+    end
+
+    context 'success cases' do
+      it 'should create a message if logged in and request has all attributes' do
+        message_count_before = Message.count
+        user = User.last
+        sign_in user
+        post :create, params: {
+          message: {
+            content: 'changed',
+            room_id: Room.last.id
+          }
+        }
+        expect(Message.count).to eq(message_count_before + 1)
+      end
+    end
+  end
 end

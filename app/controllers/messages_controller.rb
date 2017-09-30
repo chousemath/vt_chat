@@ -26,7 +26,7 @@ class MessagesController < ApplicationController
   # POST /messages.json
   def create
     message = Message.new(message_params)
-    message.user = current_user
+    message_params[:user_id] ? message.user = current_user : message.user = current_user
     if message.save
       # broadcast message to the 'messages' stream
       # the stream is then passed along to Redis
