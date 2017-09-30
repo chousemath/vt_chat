@@ -60,6 +60,10 @@ class MessagesController < ApplicationController
   # DELETE /messages/1
   # DELETE /messages/1.json
   def destroy
+    if @message.user != current_user
+      redirect_to @message.room, notice: 'You are not authorized to do that'
+      return
+    end
     @message.destroy
     respond_to do |format|
       format.html { redirect_to messages_url, notice: 'Message was successfully destroyed.' }

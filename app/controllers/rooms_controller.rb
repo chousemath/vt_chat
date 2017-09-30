@@ -12,6 +12,12 @@ class RoomsController < ApplicationController
   # GET /rooms/1.json
   def show
     @message = Message.new
+    room_user = RoomUser.find_by(room: @room, user: current_user)
+    unless room_user
+      unless RoomUser.create(room: @room, user: current_user)
+        redirect_to rooms_path
+      end
+    end
   end
 
   # GET /rooms/new
@@ -30,6 +36,7 @@ class RoomsController < ApplicationController
 
     respond_to do |format|
       if @room.save
+        RoomUser.create(room: @room, user: current_user, role: 'owner')
         format.html { redirect_to @room, notice: 'Room was successfully created.' }
         format.json { render :show, status: :created, location: @room }
       else
@@ -73,6 +80,7 @@ class RoomsController < ApplicationController
     def room_params
       params.require(:room).permit(
         :video_url,
+        :video_token,
         :name
       )
     end
