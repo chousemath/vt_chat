@@ -14,10 +14,15 @@ user_2 = User.create!(
 users = User.all
 
 room_1 = Room.create!(name: 'room1', video_url: 'https://github.com')
+RoomUser.create!(room: room_1, user: user_1, role: 'owner')
+RoomUser.create!(room: room_1, user: user_2, role: 'guest')
 
 room_2 = Room.create!(name: 'room2', video_url: 'https://github.com')
+RoomUser.create!(room: room_2, user: user_2, role: 'owner')
+RoomUser.create!(room: room_2, user: user_1, role: 'guest')
 
 rooms = Room.all
+room_users = RoomUser.all
 
 rooms.each do |r|
   10.times do
@@ -29,5 +34,6 @@ messages = Message.all
 
 puts "#{users.count} users were created"
 puts "#{rooms.count} rooms were created"
+puts "#{room_users.count} room users were created"
 puts "#{messages.count} messages were created"
 

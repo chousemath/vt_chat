@@ -237,9 +237,39 @@ html, body {
 
 
 @media screen and (max-width: 1023px) {
-
-
   #addm {
     display: block;
   }
+}
+
+@media screen and (max-width: 1023px) {
+  #addm {
+    display: block;
+  }
+  #videoSt{
+    height: 70px;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .demo-card-wide.mdl-card {
+    height: 400px;
+  }
+}
+
+.demo-card-wide.mdl-card {
+  width: 100%;
+}
+.demo-card-wide > .mdl-card__title {
+  color: #fff;
+  height: 176px;
+  background: url('../assets/demos/welcome_card.jpg') center / cover;
+}
+.demo-card-wide > .mdl-card__menu {
+  color: #fff;
+}
+video {
+  background: #222;
+  margin: 0 0 20px 0;
+  width: 100%;
 }

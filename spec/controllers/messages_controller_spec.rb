@@ -1,6 +1,45 @@
 require 'rails_helper'
 
 RSpec.describe MessagesController, type: :controller do
+
+  describe 'delete /messages' do
+    context 'failure cases' do
+      it 'should reject a request if not logged in' do
+        message_count_before = Message.count
+        delete :destroy, params: {
+          id: Message.last.id
+        }
+        expect(Message.count).to eq(message_count_before)
+      end
+
+      it 'should reject a request if message not created by user' do
+        message_count_before = Message.count
+        last_message = Message.last
+        owner = last_message.user
+        non_owner = (User.all.to_a - [owner]).sample
+        sign_in non_owner
+        delete :destroy, params: {
+          id: Message.last.id
+        }
+        expect(response).to redirect_to(last_message.room)
+        expect(Message.count).to eq(message_count_before)
+      end
+    end
+
+    context 'success cases' do
+      it 'should allow the owner of message to delete it' do
+        message_count_before = Message.count
+        last_message = Message.last
+        owner = last_message.user
+        sign_in owner
+        delete :destroy, params: {
+          id: Message.last.id
+        }
+        expect(Message.count).to eq(message_count_before - 1)
+      end
+    end
+  end
+
   describe 'put /messages' do
     context 'failure cases' do
       it 'should reject a request if not logged in' do
