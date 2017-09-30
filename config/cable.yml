@@ -6,5 +6,8 @@ test:
 
 production:
   adapter: redis
-  url: redis://localhost:6379/1
+  url: redis://redistogo:4857cbda7d798c23d0fb0cc6d856add3@tarpon.redistogo.com:10324
+  host: tarpon.redistogo.com
+  port: 10324
+  password: 4857cbda7d798c23d0fb0cc6d856add3
   channel_prefix: vt_chat_production
