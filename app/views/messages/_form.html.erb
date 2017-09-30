@@ -1,7 +1,22 @@
 <%= form_for message, remote: true, authenticity_token: true do |f| %>
-  <%= f.label :your_message %>:
-  <%= f.text_area :content, class: "form-control", data: {textarea: "message"} %>
+
+  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+    <label class="mdl-textfield__label" for="message-content">Enter your message here</label>
+    <%= f.text_field :content, id: "message-content", class: "mdl-textfield__input", data: {textarea: "message"} %>
+  </div>
 
   <%= f.hidden_field :room_id, value: room.id %>
-  <%= f.submit "send", class: "btn btn-primary", data: {send: "message"} %>
+  <%= f.submit "send", id: "submit-message-content", class: "btn btn-primary", style: "display: none;", data: {send: "message"} %>
+
 <% end %>
+
+<script>
+  $(document).ready(function() {
+    $('#message-content').keydown(function(event) {
+      if (event.keyCode == 13) {
+        $('#submit-message-content').click();
+        $('#message-content').val('');
+      }
+    });
+  });
+</script>
