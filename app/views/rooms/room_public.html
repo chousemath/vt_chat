@@ -291,12 +291,18 @@
   #addm {
     display: block;
   }
+  #videoSt{
+    height: 70px;
+  }
 }
 
 @media screen and (min-width: 1024px) {
 
   .demo-card-wide.mdl-card {
     height: 400px;
+  }
+  #videoSt{
+    height: 450px;
   }
 
 }
@@ -311,6 +317,11 @@
 }
 .demo-card-wide > .mdl-card__menu {
   color: #fff;
+}
+video {
+  background: #222;
+  margin: 0 0 20px 0;
+  width: 100%;
 }
     </style>
   </head>
@@ -342,10 +353,10 @@
 
             <div class="mdl-grid">
               <div class="mdl-cell mdl-cell--7-col" style="overflow-y: hidden;">
-                <div class="demo-card-wide mdl-card mdl-shadow--2dp" style="height: 450px;overflow-y: hidden;">
+                <div class="demo-card-wide mdl-card mdl-shadow--2dp" id="videoSt" style="overflow-y: hidden;">
                   
                   
-                    <iframe src="https://appr.tc/r/878359539?videofec=false" style="width: 100%;height: 100%;overflow-y: hidden;" scrolling="no"></iframe>
+                   <video id="gum-local" autoplay playsinline style="width: 100%;height: 100%;"></video>
                   
                   <div class="mdl-card__actions mdl-card--border">
                     <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
@@ -526,24 +537,50 @@
       </main>
     </div>
 
+    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
     <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
-    <script>
-      var dialog = document.querySelector('dialog');
-      var showDialogButton = document.querySelector('#add');
-      if (! dialog.showModal) {
-        dialogPolyfill.registerDialog(dialog);
-      }
-      showDialogButton.addEventListener('click', function() {
-        dialog.showModal();
-      });
-      dialog.querySelector('.close').addEventListener('click', function() {
-        dialog.close();
-      });
-    </script>
     <script type="text/javascript">
-      $(document).ready(function(){
-        $("#sharing-div").removeClass("active")
-      })
+      var errorElement = document.querySelector('#errorMsg');
+      var video = document.querySelector('video');
+
+      // Put variables in global scope to make them available to the browser console.
+      var constraints = window.constraints = {
+        audio: false,
+        video: true
+      };
+
+      function handleSuccess(stream) {
+        var videoTracks = stream.getVideoTracks();
+        console.log('Got stream with constraints:', constraints);
+        console.log('Using video device: ' + videoTracks[0].label);
+        stream.oninactive = function() {
+          console.log('Stream inactive');
+        };
+        window.stream = stream; // make variable available to browser console
+        video.srcObject = stream;
+      }
+
+      function handleError(error) {
+        if (error.name === 'ConstraintNotSatisfiedError') {
+          errorMsg('The resolution ' + constraints.video.width.exact + 'x' +
+              constraints.video.width.exact + ' px is not supported by your device.');
+        } else if (error.name === 'PermissionDeniedError') {
+          errorMsg('Permissions have not been granted to use your camera and ' +
+            'microphone, you need to allow the page access to your devices in ' +
+            'order for the demo to work.');
+        }
+        errorMsg('getUserMedia error: ' + error.name, error);
+      }
+
+      function errorMsg(msg, error) {
+        errorElement.innerHTML += '<p>' + msg + '</p>';
+        if (typeof error !== 'undefined') {
+          console.error(error);
+        }
+      }
+
+      navigator.mediaDevices.getUserMedia(constraints).
+          then(handleSuccess).catch(handleError);
     </script>
   </body>
 </html>
