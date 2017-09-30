@@ -91,4 +91,7 @@ Rails.application.configure do
 
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
 
+  config.middleware.use ChatActionCable
+  config.web_socket_server_url = "wss://vtchat-2017.herokuapp.com/"
+
 end
