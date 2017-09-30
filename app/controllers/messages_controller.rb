@@ -25,13 +25,9 @@ class MessagesController < ApplicationController
   # POST /messages
   # POST /messages.json
   def create
-    puts "\n\n\nIN THE MESSAGE CREATE METHOD\n\n\n"
-    puts "\n\n\nmessage_params: #{message_params.inspect}\n\n\n"
     message = Message.new(message_params)
-    message.user = current_user
-    puts "new message: #{message.inspect}"
+    message_params[:user_id] ? message.user = current_user : message.user = current_user
     if message.save
-      puts "\nI SHOULD BE PUSHED\n"
       # broadcast message to the 'messages' stream
       # the stream is then passed along to Redis
       ActionCable.server.broadcast 'messages',
@@ -39,13 +35,17 @@ class MessagesController < ApplicationController
         user: message.user.email
       head :ok
     else
-      redirect_to chatrooms_path
+      redirect_to rooms_path
     end
   end
 
   # PATCH/PUT /messages/1
   # PATCH/PUT /messages/1.json
   def update
+    if @message.user != current_user
+      redirect_to @message, notice: 'You are not authorized to do that'
+      return
+    end
     respond_to do |format|
       if @message.update(message_params)
         format.html { redirect_to @message, notice: 'Message was successfully updated.' }

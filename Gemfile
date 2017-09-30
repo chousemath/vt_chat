@@ -45,6 +45,11 @@ group :development, :test do
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '~> 2.13'
   gem 'selenium-webdriver'
+  gem 'rspec-rails', '~> 3.6'
+  gem 'rails-controller-testing'
+  gem 'database_cleaner'
+  # generate fake database entries for testing
+  gem 'faker', '~> 1.6', '>= 1.6.3'
 end
 
 group :development do
