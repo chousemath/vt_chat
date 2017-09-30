@@ -49,4 +49,9 @@ redis-server
 We are deployed on a free heroku server
 ```
 
+#### Notes on ActionCable
+
+![actioncable-1](app/assets/images/actioncable-1.png)
+
+
 * ...
