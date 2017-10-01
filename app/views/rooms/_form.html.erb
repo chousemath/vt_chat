@@ -28,7 +28,7 @@
 
   <div class="field">
     <%= form.label :room_type %>
-    <%= form.text_field :room_type, id: :room_type %>
+    <%= select(:room, :room_type, @room_types) %>
   </div>
 
   <div class="actions">

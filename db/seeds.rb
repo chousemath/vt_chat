@@ -11,6 +11,11 @@ user_2 = User.create!(
   password: 'password'
 )
 
+user_3 = User.create!(
+  email: 'user3@vtchat.com',
+  password: 'password'
+)
+
 users = User.all
 
 room_1 = Room.create!(name: 'room1', video_url: 'https://github.com')

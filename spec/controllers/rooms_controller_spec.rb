@@ -66,7 +66,7 @@ RSpec.describe RoomsController, type: :controller do
     context 'success cases' do
       it 'should create a new RoomUser if user visits room for first time' do
         room_user_count_before = RoomUser.count
-        user = User.create(email: 'user3@vtchat.com', password: 'password')
+        user = User.create(email: 'user999@vtchat.com', password: 'password')
         last_room = Room.last
         sign_in user
         get :show, params: {
@@ -89,7 +89,7 @@ RSpec.describe RoomsController, type: :controller do
   describe 'post /rooms' do
     context 'failure cases' do
       it 'should reject a request if not logged in' do
-        room_count_before = User.count
+        room_count_before = Room.count
         post :create, params: {
           room: {
             # name: 'aldkjfalskdfjalsdf',
@@ -134,6 +134,29 @@ RSpec.describe RoomsController, type: :controller do
         expect(last_room.video_url).to eq('http://guides.rubyonrails.org')
         expect(last_room.video_token).to eq('alsdkfjasldkfj')
         expect(last_room.room_type).to eq('open')
+        expect(RoomUser.count).to eq(room_user_count_before + 1)
+        last_room_user = RoomUser.last
+        expect(last_room_user.user).to eq(user)
+        expect(last_room_user.room).to eq(last_room)
+        expect(last_room_user.role).to eq('owner')
+      end
+
+      it 'should automatically create a video_url if room is closed' do
+        room_count_before = Room.count
+        room_user_count_before = RoomUser.count
+        user = User.all.sample
+        sign_in user
+        post :create, params: {
+          room: {
+            name: 'aldkjfalskdfja2342342lsdf',
+            room_type: 'closed'
+          }
+        }
+        expect(Room.count).to eq(room_count_before + 1)
+        last_room = Room.last
+        expect(last_room.name).to eq('aldkjfalskdfja2342342lsdf')
+        expect(last_room.video_url).not_to be_nil
+        expect(last_room.room_type).to eq('closed')
         expect(RoomUser.count).to eq(room_user_count_before + 1)
         last_room_user = RoomUser.last
         expect(last_room_user.user).to eq(user)
