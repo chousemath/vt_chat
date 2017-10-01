@@ -1,6 +1,67 @@
 require 'rails_helper'
 
 RSpec.describe RoomsController, type: :controller do
+  describe 'put /rooms/:id' do
+    context 'failure cases' do
+      it 'should reject a request if not logged in' do
+        last_room = Room.last
+        put :update, params: {
+          room: {
+            name: 'CHANGED-NAME',
+            video_url: 'CHANGED-URL',
+            room_type: 'closed'
+          },
+          id: last_room.id
+        }
+        last_room = Room.last
+        expect(last_room.name).not_to eq('CHANGED-NAME')
+        expect(last_room.video_url).not_to eq('CHANGED-URL')
+        expect(last_room.room_type).not_to eq('closed')
+      end
+
+      it 'should reject a request if not room owner' do
+        last_room = Room.last
+        owner = RoomUser.find_by(room: last_room, role: 'owner').user
+        non_owner = (User.all.to_a - [owner]).sample
+        sign_in non_owner
+        put :update, params: {
+          room: {
+            name: 'CHANGED-NAME',
+            video_url: 'CHANGED-URL',
+            room_type: 'closed'
+          },
+          id: last_room.id
+        }
+        last_room = Room.last
+        expect(last_room.name).not_to eq('CHANGED-NAME')
+        expect(last_room.video_url).not_to eq('CHANGED-URL')
+        expect(last_room.room_type).not_to eq('closed')
+      end
+    end
+
+    context 'success cases' do
+      it 'should allow room owner to update room' do
+        last_room = Room.last
+        owner = RoomUser.find_by(room: last_room, role: 'owner').user
+        sign_in owner
+        put :update, params: {
+          room: {
+            name: 'CHANGED-NAME',
+            video_url: 'CHANGED-URL',
+            video_token: {test: 'test'}.to_json,
+            room_type: 'closed'
+          },
+          id: last_room.id
+        }
+        last_room = Room.last
+        expect(last_room.name).to eq('CHANGED-NAME')
+        expect(last_room.video_url).to eq('CHANGED-URL')
+        expect(last_room.video_token).to eq({test: 'test'}.to_json)
+        expect(last_room.room_type).to eq('closed')
+      end
+    end
+  end
+
   describe 'show /rooms/:id' do
     context 'success cases' do
       it 'should create a new RoomUser if user visits room for first time' do
@@ -72,6 +133,7 @@ RSpec.describe RoomsController, type: :controller do
         expect(last_room.name).to eq('aldkjfalskdfjalsdf')
         expect(last_room.video_url).to eq('http://guides.rubyonrails.org')
         expect(last_room.video_token).to eq('alsdkfjasldkfj')
+        expect(last_room.room_type).to eq('open')
         expect(RoomUser.count).to eq(room_user_count_before + 1)
         last_room_user = RoomUser.last
         expect(last_room_user.user).to eq(user)

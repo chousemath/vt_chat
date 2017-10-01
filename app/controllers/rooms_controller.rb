@@ -50,6 +50,11 @@ class RoomsController < ApplicationController
   # PATCH/PUT /rooms/1.json
   def update
     respond_to do |format|
+      room_user = RoomUser.find_by(room: @room, user: current_user)
+      unless room_user && room_user.owner?
+        redirect_to @room, notice: 'You are not authorized to do that'
+        return
+      end
       if @room.update(room_params)
         format.html { redirect_to @room, notice: 'Room was successfully updated.' }
         format.json { render :show, status: :ok, location: @room }
@@ -81,7 +86,8 @@ class RoomsController < ApplicationController
       params.require(:room).permit(
         :video_url,
         :video_token,
-        :name
+        :name,
+        :room_type
       )
     end
 end
