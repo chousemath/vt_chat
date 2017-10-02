@@ -23,6 +23,7 @@ class RoomsController < ApplicationController
   # GET /rooms/new
   def new
     @room = Room.new
+    @room_types = [['Private', 'closed']]
   end
 
   # GET /rooms/1/edit
@@ -33,7 +34,6 @@ class RoomsController < ApplicationController
   # POST /rooms.json
   def create
     @room = Room.new(room_params)
-
     respond_to do |format|
       if @room.save
         RoomUser.create(room: @room, user: current_user, role: 'owner')
