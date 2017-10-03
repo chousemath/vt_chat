@@ -5,7 +5,8 @@ class RoomsController < ApplicationController
   # GET /rooms
   # GET /rooms.json
   def index
-    @rooms = Room.all
+    @room_users = RoomUser.where(user: current_user)
+    @rooms = @room_users ? @room_users.map{|ru| ru.room} : []
   end
 
   # GET /rooms/1
