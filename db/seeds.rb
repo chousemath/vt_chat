@@ -18,11 +18,11 @@ user_3 = User.create!(
 
 users = User.all
 
-room_1 = Room.create!(name: 'room1', video_url: 'https://github.com')
+room_1 = Room.create!(name: 'room1', room_type: 'closed')
 RoomUser.create!(room: room_1, user: user_1, role: 'owner')
 RoomUser.create!(room: room_1, user: user_2, role: 'guest')
 
-room_2 = Room.create!(name: 'room2', video_url: 'https://github.com')
+room_2 = Room.create!(name: 'room2', room_type: 'closed')
 RoomUser.create!(room: room_2, user: user_2, role: 'owner')
 RoomUser.create!(room: room_2, user: user_1, role: 'guest')
 

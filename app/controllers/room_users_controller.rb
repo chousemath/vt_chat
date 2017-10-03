@@ -13,9 +13,17 @@ class RoomUsersController < ApplicationController
   end
 
   def create
+    room = Room.find(room_user_params[:room_id])
+
+    if room.closed? && room.room_users.count >= 2
+      redirect_to rooms_path
+      return
+    end
+
     @room_user = RoomUser.new(room_user_params)
 
     owner_room_user = RoomUser.find_by(room_id: @room_user.room_id, user: current_user)
+
     unless owner_room_user && owner_room_user.owner?
       redirect_to rooms_path
       return
@@ -30,6 +38,9 @@ class RoomUsersController < ApplicationController
         format.json { render json: @room_user.errors, status: :unprocessable_entity }
       end
     end
+  rescue ActiveRecord::RecordNotFound
+    redirect_to rooms_path
+    return
   end
 
   def update
@@ -37,7 +48,7 @@ class RoomUsersController < ApplicationController
       room_id = room_user_params[:room_id] || @room_user.room_id
       room_user = RoomUser.find_by(room_id: room_id, user: current_user)
       unless room_user && room_user.owner?
-        redirect_to @room_user.room
+        redirect_to rooms_path
         return
       end
       if @room_user.update(room_user_params)
@@ -48,6 +59,9 @@ class RoomUsersController < ApplicationController
         format.json { render json: @room_user.errors, status: :unprocessable_entity }
       end
     end
+  rescue ActiveRecord::RecordNotFound
+    redirect_to rooms_path
+    return
   end
 
   def destroy

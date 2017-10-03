@@ -9,14 +9,14 @@ RSpec.describe RoomsController, type: :controller do
           room: {
             name: 'CHANGED-NAME',
             video_url: 'CHANGED-URL',
-            room_type: 'closed'
+            room_type: 'open'
           },
           id: last_room.id
         }
         last_room = Room.last
         expect(last_room.name).not_to eq('CHANGED-NAME')
         expect(last_room.video_url).not_to eq('CHANGED-URL')
-        expect(last_room.room_type).not_to eq('closed')
+        expect(last_room.room_type).not_to eq('open')
       end
 
       it 'should reject a request if not room owner' do
@@ -28,14 +28,14 @@ RSpec.describe RoomsController, type: :controller do
           room: {
             name: 'CHANGED-NAME',
             video_url: 'CHANGED-URL',
-            room_type: 'closed'
+            room_type: 'open'
           },
           id: last_room.id
         }
         last_room = Room.last
         expect(last_room.name).not_to eq('CHANGED-NAME')
         expect(last_room.video_url).not_to eq('CHANGED-URL')
-        expect(last_room.room_type).not_to eq('closed')
+        expect(last_room.room_type).not_to eq('open')
       end
     end
 
