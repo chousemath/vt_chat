@@ -58,9 +58,11 @@ class RoomsController < ApplicationController
       if @room.update(room_params)
         format.html { redirect_to @room, notice: 'Room was successfully updated.' }
         format.json { render :show, status: :ok, location: @room }
+        format.js   { render :layout => false }
       else
         format.html { render :edit }
         format.json { render json: @room.errors, status: :unprocessable_entity }
+        format.js   { render :layout => false }
       end
     end
   end
