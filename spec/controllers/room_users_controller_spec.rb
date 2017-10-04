@@ -46,7 +46,10 @@ RSpec.describe RoomUsersController, type: :controller do
         last_room_user = RoomUser.last
         room = last_room_user.room
         user = last_room_user.user
-        different_user = (User.all.to_a - [user]).sample
+        different_user = User.create!(
+          email: 'sdfsdf8sdf@vtchat.com',
+          password: 'password'
+        )
         owner = RoomUser.find_by(room: room, role: 'owner').user
         non_owner = (User.all.to_a - [owner]).sample
         sign_in non_owner
@@ -66,7 +69,10 @@ RSpec.describe RoomUsersController, type: :controller do
         last_room_user = RoomUser.last
         room = last_room_user.room
         user = last_room_user.user
-        different_user = (User.all.to_a - [user]).sample
+        different_user = User.create!(
+          email: 'fdfdf777s7@vtchat.com',
+          password: 'password'
+        )
         owner = RoomUser.find_by(room: room, role: 'owner').user
         sign_in owner
         put :update, params: {
@@ -84,8 +90,14 @@ RSpec.describe RoomUsersController, type: :controller do
         room = last_room_user.room
         user = last_room_user.user
         different_room = (Room.all.to_a - [room]).sample
-        different_user = (User.all.to_a - [user]).sample
+
+        different_user = User.create!(
+          email: 'jlakdsjfksjdfksf@vtchat.com',
+          password: 'password'
+        )
+
         owner = RoomUser.find_by(room: different_room, role: 'owner').user
+
         sign_in owner
         put :update, params: {
           room_user: {
@@ -94,6 +106,10 @@ RSpec.describe RoomUsersController, type: :controller do
           },
           id: last_room_user.id
         }
+
+        puts "\n\nDIFFERENT ROOM ID: #{different_room.id}\n\n"
+        puts "\n\nLAST ROOM ID: #{last_room_user.room_id}\n\n"
+
         last_room_user = RoomUser.last
         expect(last_room_user.room_id).to eq(different_room.id)
         expect(last_room_user.user_id).to eq(different_user.id)
@@ -160,6 +176,26 @@ RSpec.describe RoomUsersController, type: :controller do
           }
           expect(RoomUser.count).to eq(room_user_count_before)
         end
+
+        it 'should reject a request if room is closed and already 2 relationships' do
+          room = Room.create!(name: 'kjk8234jljsdf77fsdf', room_type: 'closed')
+          expect(room.name).to eq('kjk8234jljsdf77fsdf')
+          expect(room.room_type).to eq('closed')
+          owner = User.first
+          non_owner = User.second
+          other = User.third
+          RoomUser.create!(room: room, user: owner, role: 'owner')
+          RoomUser.create!(room: room, user: non_owner, role: 'guest')
+          room_user_count_before = room.room_users.count
+          expect(room_user_count_before).to eq(2)
+          post :create, params: {
+            room_user: {
+              room_id: room.id,
+              user_id: other.id
+            }
+          }
+          expect(room.room_users.count).to eq(room_user_count_before)
+        end
       end
 
       context 'success cases' do
@@ -175,7 +211,7 @@ RSpec.describe RoomUsersController, type: :controller do
               user_id: non_owner.id
             }
           }
-          expect(RoomUser.count).to eq(room_user_count_before + 1)
+          expect(RoomUser.count).to eq(room_user_count_before)
         end
       end
     end

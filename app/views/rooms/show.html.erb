@@ -39,8 +39,9 @@
             <div class="mdl-cell mdl-cell--7-col" style="overflow-y: hidden;">
               <div class="demo-card-wide mdl-card mdl-shadow--2dp" style="height: 100%;overflow-y: hidden;">
 
-
-                  <iframe src="https://appr.tc/r/878as539" style="width: 100%;height: 100%;overflow-y: hidden;" scrolling="no"></iframe>
+                <% if @room.closed? && !@room.video_url.nil? %>
+                  <iframe src="<%= @room.video_url %>" style="width: 100%;height: 100%;overflow-y: hidden;" scrolling="no"></iframe>
+                <% end %>
 
                 <div class="mdl-card__actions mdl-card--border">
                   <%= link_to 'Edit', edit_room_path(@room), class: "mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" %>
